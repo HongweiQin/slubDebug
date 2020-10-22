@@ -22,6 +22,37 @@ static int find_empty_slot(void) {
 	return MAX_SLABS;
 }
 
+/* a @slot */
+static void allocate_mem(char *cmd) {
+	int slot;
+	
+	sscanf(cmd, "%d", &slot);
+	if (slot >= 0 && slot < MAX_SLABS) {
+		void *p =
+			kmem_cache_alloc(my_slabs[slot], GFP_KERNEL);
+
+		pr_notice("Allocate from slab[%d] success, addr=0x%lx\n",
+					slot, (unsigned long)p);
+	}
+}
+
+/* f @slot @p */
+static void free_mem(char *cmd) {
+	int slot;
+	unsigned long pi;
+	
+	sscanf(cmd, "%d %lx", &slot, &pi);
+	if (slot >= 0 && slot < MAX_SLABS) {
+ 		void *p =
+ 			(void *)pi;
+
+		pr_notice("Free to slab[%d], addr=0x%lx\n",
+					slot, (unsigned long)p);
+		kmem_cache_free(my_slabs[slot], p);
+	}
+}
+
+
 static void __destroy_slab(int slot, int print) {
 	if (slot >= 0 && slot < MAX_SLABS) {
 		if (my_slabs[slot]) {
@@ -36,6 +67,7 @@ static void __destroy_slab(int slot, int print) {
 		pr_notice("Error\n");
 }
 
+/* d @slot */
 static void destroy_slab(char *cmd, int print) {
 	int slot;
 
@@ -44,6 +76,7 @@ static void destroy_slab(char *cmd, int print) {
 	__destroy_slab(slot, print);	
 }
 
+/* n @size */
 static void allocate_new_slab(char *cmd) {
 	int init_size;
 	int slot;
@@ -66,6 +99,7 @@ static void allocate_new_slab(char *cmd) {
 		pr_notice("Creat failed\n");
 	}
 }
+
 static ssize_t slubDebug_write(struct file *file,
 				const char __user *buffer,
 				size_t count, loff_t *ppos)
@@ -75,9 +109,17 @@ static ssize_t slubDebug_write(struct file *file,
 
 	ret = copy_from_user(usrCommand, buffer,count);
 	switch (usrCommand[0]) {
+	case 'a':
+		pr_notice("%s, a\n", __func__);
+		allocate_mem(&usrCommand[1]);
+		break;
 	case 'd':
 		pr_notice("%s, d\n", __func__);
 		destroy_slab(&usrCommand[1], 1);
+		break;
+	case 'f':
+		pr_notice("%s, f\n", __func__);
+		free_mem(&usrCommand[1]);
 		break;
 	case 'n':
 		pr_notice("%s, n\n", __func__);
