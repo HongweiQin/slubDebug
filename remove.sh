@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rmmod slubD.ko
+rmmod mod_slubDebug.ko

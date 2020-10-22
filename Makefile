@@ -3,7 +3,7 @@
 # and optimized by myself
 #
 
-modname ?= slubD
+modname ?= mod_slubDebug
 sourcelist ?= slubDebug.o
 #headerdir ?=
 
