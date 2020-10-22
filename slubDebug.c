@@ -22,6 +22,112 @@ static int find_empty_slot(void) {
 	return MAX_SLABS;
 }
 
+/* r @pointer @size
+ * size can be 8, 16, 32, 64 bits
+ */
+static void debug_read(char *cmd) {
+	unsigned long pi;
+	unsigned long size;
+	
+	sscanf(cmd, "%lx %lu", &pi, &size);
+
+	switch (size) {
+	case 8:
+		do {
+			u8 sd;
+			u8 *p = (u8 *)pi;
+
+			sd = *p;
+			pr_notice("read finished, result=%d =0x%x\n", sd, sd);
+		} while (0);
+		break;
+	case 16:
+		do {
+			u16 sd;
+			u16 *p = (u16 *)pi;
+
+			sd = *p;
+			pr_notice("read finished, result=%d =0x%x\n", sd, sd);
+		} while (0);
+		break;
+	case 32:
+		do {
+			u32 sd;
+			u32 *p = (u32 *)pi;
+
+			sd = *p;
+			pr_notice("read finished, result=%d =0x%x\n", sd, sd);
+		} while (0);
+		break;
+	case 64:
+		do {
+			u64 sd;
+			u64 *p = (u64 *)pi;
+
+			sd = *p;
+			pr_notice("read finished, result=%lld =0x%llx\n", sd, sd);
+		} while (0);
+		break;
+	default:
+		pr_notice("Not supported\n");
+		break;
+	}
+}
+
+
+/* w @pointer @size @data
+ * size can be 8, 16, 32, 64 bits
+ */
+static void debug_write(char *cmd) {
+	unsigned long pi;
+	unsigned long size, data;
+	
+	sscanf(cmd, "%lx %lu %lu", &pi, &size, &data);
+
+	switch (size) {
+	case 8:
+		do {
+			u8 sd = (u8)data;
+			u8 *p = (u8 *)pi;
+			
+			*p = sd;
+			pr_notice("write (%d) to (%p) finished\n", sd, p);
+		} while (0);
+		break;
+	case 16:
+		do {
+			u16 sd = (u16)data;
+			u16 *p = (u16 *)pi;
+
+			*p = sd;
+			pr_notice("write (%d) to (%p) finished\n", sd, p);
+		} while (0);
+		break;
+	case 32:
+		do {
+			u32 sd = (u32)data;
+			u32 *p = (u32 *)pi;
+
+			*p = sd;
+			pr_notice("write (%d) to (%p) finished\n", sd, p);
+		} while (0);
+		break;
+	case 64:
+		do {
+			u64 sd = (u64)data;
+			u64 *p = (u64 *)pi;
+
+			*p = sd;
+			pr_notice("write (%lld) to (%p) finished\n", sd, p);
+		} while (0);
+		break;
+	default:
+		pr_notice("Not supported\n");
+		break;
+	}
+}
+
+
 /* a @slot */
 static void allocate_mem(char *cmd) {
 	int slot;
@@ -76,7 +182,9 @@ static void destroy_slab(char *cmd, int print) {
 	__destroy_slab(slot, print);	
 }
 
-/* n @size */
+/* n @size
+ * @size is in bytes
+ */
 static void allocate_new_slab(char *cmd) {
 	int init_size;
 	int slot;
@@ -124,6 +232,14 @@ static ssize_t slubDebug_write(struct file *file,
 	case 'n':
 		pr_notice("%s, n\n", __func__);
 		allocate_new_slab(&usrCommand[1]);
+		break;
+	case 'r':
+		pr_notice("%s, r\n", __func__);
+		debug_read(&usrCommand[1]);
+		break;
+	case 'w':
+		pr_notice("%s, w\n", __func__);
+		debug_write(&usrCommand[1]);
 		break;
 	}
 	return count;

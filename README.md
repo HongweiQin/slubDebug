@@ -50,4 +50,18 @@ Free 0xaabb to slot 0
 
     ./cmd.sh f 0 aabb
 
+### Write 
+
+Write @data to @pointer as @size
+
+    ./cmd.sh w aabb 16 1
+
+This command will write 1 as a 16bit integer to 0xaabb
+
+### Read
+
+    ./cmd.sh r aabb 64
+
+This command will read a 64bit integer from 0xaabb
+
 
