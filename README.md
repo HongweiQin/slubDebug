@@ -30,6 +30,12 @@ Allocate a kmem cache whose object size is 8 Bytes
 
 `dmesg` will show the slot number of the new allocated slab cache.
 
+Users can also specify the slab cache flags. E.g.,
+
+    ./cmd.sh n fzptu 8
+
+See linux kernel source mm/slub.c for more information.
+
 ### Destroy a kmem cache
 
 Destroy a kmem cache in slot 0
