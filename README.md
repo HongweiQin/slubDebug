@@ -72,10 +72,14 @@ Write #data to @pointer as @size in Bytes
 
 This command will memset(aabb, 1, 8)
 
-### Read
+### Read by pointer
 
     ./cmd.sh r aabb 64
 
 This command will read a 64bit integer from 0xaabb
+
+### Read by hexdump
+
+   ./cmd.sh h aabb 512
 
 

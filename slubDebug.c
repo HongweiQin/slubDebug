@@ -129,7 +129,6 @@ static void debug_write(char *cmd) {
 
 
 /* m @pointer @size @data
- * size can be 8, 16, 32, 64 bits
  */
 static void debug_write_memset(char *cmd) {
 	unsigned long pi;
@@ -142,6 +141,17 @@ static void debug_write_memset(char *cmd) {
 					(int)data, (void *)pi, (int) size);
 }
 
+/* h @pointer @size
+ */
+static void debug_hexdump(char *cmd) {
+	unsigned long pi;
+	unsigned long size;
+	
+	sscanf(cmd, "%lx", &pi, &size);
+
+	print_hex_dump(KERN_NOTICE, "mem: ", DUMP_PREFIX_ADDRESS,
+                                16, 1, (void *)pi, size, 1);
+}
 
 /* a @slot */
 static void allocate_mem(char *cmd) {
@@ -266,6 +276,10 @@ static ssize_t slubDebug_write(struct file *file,
 	case 'f':
 		pr_notice("%s, f\n", __func__);
 		free_mem(&usrCommand[1]);
+		break;
+	case 'h':
+		pr_notice("%s, h\n", __func__);
+		debug_hexdump(&usrCommand[1]);
 		break;
 	case 'm':
 		pr_notice("%s, m\n", __func__);
