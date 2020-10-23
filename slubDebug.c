@@ -182,13 +182,32 @@ static void destroy_slab(char *cmd, int print) {
 	__destroy_slab(slot, print);	
 }
 
-/* n @size
+/* n @flags @size
  * @size is in bytes
+ * @flags can be the combination of the follows:
+ * f: sanity_checks
+ * z: red_zone
+ * p: poison
  */
 static void allocate_new_slab(char *cmd) {
 	int init_size;
 	int slot;
 	char slabname[64];
+	slab_flags_t flags = 0;
+
+	cmd++;
+	while (*cmd != ' ') {
+		if (*cmd == 'f') {
+			flags |= SLAB_CONSISTENCY_CHECKS;
+		} else if (*cmd == 'z') {
+			flags |= SLAB_RED_ZONE;
+		} else if (*cmd == 'p') {
+			flags |= SLAB_POISON;
+		} else {
+			break;
+		}
+		cmd++;
+	}
 
 	sscanf(cmd, "%d", &init_size);
 	slot = find_empty_slot();
@@ -199,10 +218,10 @@ static void allocate_new_slab(char *cmd) {
 
 	sprintf(slabname, "slubDebug_%d", slot);
 	my_slabs[slot] = kmem_cache_create(slabname, init_size, 0,
-								SLAB_HWCACHE_ALIGN,
+								SLAB_HWCACHE_ALIGN | SLAB_PANIC | flags,
 								NULL);
 	if (my_slabs[slot]) {
-		pr_notice("Created, slot=%d\n", slot);
+		pr_notice("Created, slot=%d flags=0x%x\n", slot, flags);
 	} else {
 		pr_notice("Creat failed\n");
 	}
