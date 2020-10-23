@@ -128,6 +128,21 @@ static void debug_write(char *cmd) {
 }
 
 
+/* m @pointer @size @data
+ * size can be 8, 16, 32, 64 bits
+ */
+static void debug_write_memset(char *cmd) {
+	unsigned long pi;
+	unsigned long size, data;
+	
+	sscanf(cmd, "%lx %lu %lu", &pi, &size, &data);
+
+	memset((void *)pi, data, size);
+	pr_notice("memset (%d) to (%p) size(%d) finished\n",
+					(int)data, (void *)pi, (int) size);
+}
+
+
 /* a @slot */
 static void allocate_mem(char *cmd) {
 	int slot;
@@ -251,6 +266,10 @@ static ssize_t slubDebug_write(struct file *file,
 	case 'f':
 		pr_notice("%s, f\n", __func__);
 		free_mem(&usrCommand[1]);
+		break;
+	case 'm':
+		pr_notice("%s, m\n", __func__);
+		debug_write_memset(&usrCommand[1]);
 		break;
 	case 'n':
 		pr_notice("%s, n\n", __func__);

@@ -56,13 +56,21 @@ Free 0xaabb to slot 0
 
     ./cmd.sh f 0 aabb
 
-### Write 
+### Write by pointer
 
-Write @data to @pointer as @size
+Write @data to @pointer as @size in bits
 
     ./cmd.sh w aabb 16 1
 
 This command will write 1 as a 16bit integer to 0xaabb
+
+### Write by memset
+
+Write #data to @pointer as @size in Bytes
+
+    ./cmd.sh m aabb 8 1
+
+This command will memset(aabb, 1, 8)
 
 ### Read
 
