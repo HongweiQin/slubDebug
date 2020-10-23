@@ -203,6 +203,10 @@ static void allocate_new_slab(char *cmd) {
 			flags |= SLAB_RED_ZONE;
 		} else if (*cmd == 'p') {
 			flags |= SLAB_POISON;
+		} else if (*cmd == 't') {
+			flags |= SLAB_TRACE;
+		} else if (*cmd == 'u') {
+			flags |= SLAB_STORE_USER;
 		} else {
 			break;
 		}
